@@ -20,9 +20,9 @@ Selamat datang Bu Yuita di Kelompok kami bu😍🫶. Pada proyek ini kami berfok
 
 ### 📅 Minggu 2: 14 & 15 Mei 2025
 
-- Fitur sudah dibobot (TF, TF-IDF, dsb)
-- Seleksi fitur dilakukan
-- Model awal sudah diimplementasikan
+- ✅Fitur sudah dibobot (TF, TF-IDF, dsb)
+- ✅Seleksi fitur dilakukan
+- ✅Model awal sudah diimplementasikan
 - Evaluasi awal sudah dilakukan
 
 ---
