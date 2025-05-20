@@ -44,7 +44,7 @@ stopwords = set(default_stopwords + custom_stopwords)
 no_stem_words = {
     'bergizi', 'berhasil', 'mengurangi',
     'peningkatan', 'mengentaskan', 'kebijakan',
-    'diragukan', 'tujuan', 'ditingkatkan', 'atasan','pelajar'
+    'diragukan', 'tujuan', 'ditingkatkan', 'atasan','pelajar','keterlaksanaan'
 }
 
 abbreviation_dict = {
@@ -88,7 +88,7 @@ def normalize_hashtags(text):
 
     hashtags = re.findall(r'#\w+', text)
     for tag in hashtags:
-        clean_tag = tag[1:]  # hapus '#'
+        clean_tag = tag[1:]
         lowered = clean_tag.lower()
         expanded = lowered
         for word in known_words:
@@ -97,21 +97,51 @@ def normalize_hashtags(text):
         text = text.replace(tag, expanded)
     return text   
 
-# Fungsi utama preprocessing
-def preprocess(text):
-    text = text.lower()
+def split_compound_words(text, known_words):
+    pattern = re.compile(r'\b\w+\b')
+    words = pattern.findall(text)
+    result = []
+    for word in words:
+        if word in known_words:
+            result.append(word)
+        else:
+            split_word = try_split_word(word, known_words)
+            if split_word:
+                result.extend(split_word)
+            else:
+                result.append(word)
+    return ' '.join(result)
 
+def try_split_word(word, known_words):
+    splits = []
+    i = 0
+    while i < len(word):
+        found = False
+        for j in range(len(word), i, -1):
+            if word[i:j] in known_words:
+                splits.append(word[i:j])
+                i = j
+                found = True
+                break
+        if not found:
+            return None
+    return splits
+
+#preprocessing
+def preprocess(text):
+    text = text.lower() 
     text = normalize_hashtags(text)
-    
-    # Gabungkan frasa angka dulu
     text = merge_number_phrases(text)
 
-    # Ganti frasa dengan singkatan (misal: makan bergizi gratis → mbg)
+    known_words_for_split = ['makan', 'bergizi', 'gratis', 'dukung', 'pemerataan', 'gizi', 'anak', 'sehat']
+    text = split_compound_words(text, known_words_for_split)
+
+    # Ganti frasa dengan singkatan  (misal: makan bergizi gratis → mbg)
     for phrase, abbr in abbreviation_dict.items():
         text = re.sub(r'\b' + re.escape(phrase) + r'\b', abbr, text)
 
     # Hapus karakter non-huruf kecuali strip (untuk kata ulang)
-    text = re.sub(r'[^\w\s\-\,\.\#]', ' ', text)
+    text = re.sub(r'[^\w\s\-\,\.\#\%]', ' ', text)
     
     # Tokenisasi
     tokens = word_tokenize(text)
