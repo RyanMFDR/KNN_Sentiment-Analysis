@@ -27,6 +27,7 @@ normalization_dict = {
     "dgn": "dengan",
     "utk": "untuk",
     "ga": "tidak",
+    "gakan":"tidak",
     "gak": "tidak",
     "tdk": "tidak",
     "dpt": "dapat",
@@ -35,7 +36,10 @@ normalization_dict = {
     "lo": "kamu",
     "gemoy": "presiden",
     "%": "persen",
-    "bangke":"bangkai"
+    "bangke":"bangkai",
+    "ngebayangin": "membayangkan",
+    "makin":"semakin",
+    
 }
 
 custom_stopwords = ['fufufafa']
@@ -44,7 +48,7 @@ stopwords = set(default_stopwords + custom_stopwords)
 no_stem_words = {
     'bergizi', 'berhasil', 'mengurangi',
     'peningkatan', 'mengentaskan', 'kebijakan',
-    'diragukan', 'tujuan', 'ditingkatkan', 'atasan','pelajar','keterlaksanaan'
+    'diragukan', 'tujuan', 'ditingkatkan', 'atasan','pelajar','keterlaksanaan','mengakui'
 }
 
 abbreviation_dict = {
@@ -65,6 +69,9 @@ def merge_number_phrases(text):
     #99,99 persen → 99,99_persen
     text = re.sub(r'(\d{1,3}(?:,\d{1,3})?)\s+(persen)', r'\1_\2', text)
 
+    #industri 4.0 → industri_4.0
+    text = re.sub(r'\b(industri)\s+(\d+(\.\d+)?)\b', r'\1_\2', text, flags=re.IGNORECASE)
+    
     #angka+ (juta|miliar|ribu)? + (orang|anak|korban|penduduk|warga|siswa|guru|napi)
     text = re.sub(
         r'(\d+)\s+(juta|miliar|ribu)?\s*(orang|anak|korban|penduduk|warga|siswa|guru|napi)',
@@ -133,7 +140,7 @@ def preprocess(text):
     text = normalize_hashtags(text)
     text = merge_number_phrases(text)
 
-    known_words_for_split = ['makan', 'bergizi', 'gratis', 'dukung', 'pemerataan', 'gizi', 'anak', 'sehat']
+    known_words_for_split = ['makan', 'bergizi', 'gratis', 'dukung', 'pemerataan', 'gizi', 'anak', 'sehat','mbg','majukan','papua']
     text = split_compound_words(text, known_words_for_split)
 
     # Ganti frasa dengan singkatan  (misal: makan bergizi gratis → mbg)
